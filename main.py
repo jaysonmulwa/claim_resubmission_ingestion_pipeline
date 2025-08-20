@@ -100,15 +100,13 @@ def check_failed(row):
 
     known_non_retryable_reasons = [
         "Authorization expired", "Incorrect provider type"
-
     ]
 
-    # Check for known retryable reasons
+    # Check for known non-retryable reasons
     for reason in known_non_retryable_reasons:
         if reason.lower() == denial_reason:
             return True
         
-    
     return False
 
 @task(log_prints=True)
