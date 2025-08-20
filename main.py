@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import logging
+from prefect import flow, task
 
 CSV_INPUT_FILE = "emr_alpha.csv"
 JSON_INPUT_FILE= "emr_beta.json"
@@ -15,11 +16,14 @@ METRICS = {
     "total_failed": 0
 }
 
+@task(log_prints=True)
 def read_json():
     return pd.read_json(JSON_INPUT_FILE)
 
+@task(log_prints=True)
 def read_csv():
     return pd.read_csv(CSV_INPUT_FILE)
+
 
 def unified_schema_map():
     return {
@@ -32,6 +36,7 @@ def unified_schema_map():
         "source_system": "alpha or beta"
     }
 
+@task(log_prints=True)
 def transform_data(df, source):
     schema_map = unified_schema_map()
 
@@ -53,7 +58,7 @@ def transform_data(df, source):
 
     return df_transformed
 
-
+@task(log_prints=True)
 def check_resubmission(row):
     """
     Check resubmission eligibility per Column
@@ -86,6 +91,7 @@ def check_resubmission(row):
     
     return False 
 
+@task(log_prints=True)
 def check_failed(row):
 
     # Fetch denial reason       
@@ -104,7 +110,7 @@ def check_failed(row):
     
     return False
 
-
+@task(log_prints=True)
 def resubmission_logic(df):
     """
     A claim should be flagged for resubmission if all the following are true:
@@ -121,7 +127,7 @@ def resubmission_logic(df):
     df_flaggable['resubmission_eligible'] = df_flaggable.apply(check_resubmission, axis=1)
     return df_flaggable
 
-
+@task(log_prints=True)
 def automated_resubmission_output(df):
     """
     Produce a list of claims eligible for automated resubmission, including:
@@ -144,7 +150,7 @@ def automated_resubmission_output(df):
 
     METRICS["total_resubmission_eligible"] = len(df_resubmission)
 
-
+@task(log_prints=True)
 def output_failed(df):
     """
     Produce a list of claims that failed:
@@ -163,16 +169,15 @@ def output_failed(df):
 
     METRICS["total_failed"] = len(df_failed)
 
-
+@task(log_prints=True)
 def aggregate_metrics():
     with open('claims_metrics.json', 'w') as f:
         json.dump(METRICS, f)
 
     logging.info("Metrics saved to 'claims_metrics.json'")
 
-    
-
-if __name__ == "__main__":
+@flow(name="claim_resubmission_ingestion")
+def claim_resubmission_ingestion():
     # Read both files
     df_json = read_json()
     df_csv = read_csv()
@@ -198,3 +203,8 @@ if __name__ == "__main__":
 
     # 5. Output_metrcis
     aggregate_metrics()
+
+ 
+
+if __name__ == "__main__":
+    claim_resubmission_ingestion()
