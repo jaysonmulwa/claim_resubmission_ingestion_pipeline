@@ -28,5 +28,5 @@ The required ouputs are as below and are saved in their respective files:
 ## Bonus Stretch Goals (Optional but impressive):
 - [x] Modularize the pipeline using functions or classes.
 - [ ] Add a FastAPI endpoint to upload new datasets and return resubmission candidates.
-- [ ] Simulate a Dagster or Prefect pipeline for orchestration.
+- [x] Simulate a Dagster or Prefect pipeline for orchestration.
 - [ ] Mock an LLM "classifier" function for ambiguous denia
