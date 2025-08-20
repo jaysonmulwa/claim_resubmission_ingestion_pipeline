@@ -174,38 +174,49 @@ def output_failed(df):
 def aggregate_metrics():
     with open(CLAIM_METRICS_OUTPUT_FILE, 'w') as f:
         json.dump(METRICS, f)
-
-    logging.info("Metrics saved to 'claims_metrics.json'")
+    logging.info(f"Metrics saved to ${CLAIM_METRICS_OUTPUT_FILE}")
 
 @flow(name="claim_resubmission_ingestion")
 def claim_resubmission_ingestion():
+
     # Read both files
+    logging.info("Loading json and csv files")
     df_json = read_json()
     df_csv = read_csv()
 
     # 1. Schema Normalization: transform both frames
+    logging.info("Starting Schema Normalization")
     df_transformed_json = transform_data(df=df_json, source="beta")
     METRICS["total_claims_beta_json"] = len(df_transformed_json)
     df_transformed_csv  = transform_data(df=df_csv, source="alpha")
     METRICS["total_claims_alpha_csv"] = len(df_transformed_csv)
     
     # 1.1: combine both dataframes
+    logging.info("Combining json and csv dataframes")
     df_combined = pd.concat([df_transformed_json, df_transformed_csv], ignore_index=True)
     METRICS["total_claims"] = len(df_combined)
 
     # 2. Flag for resubmission
+    logging.info("Flagging records for resubmission")
     df_flagged = resubmission_logic(df_combined)
 
     # 3. Filter and Save output
+    logging.info("Saving records due for resubmission")
     automated_resubmission_output(df_flagged)
 
     # 4. Output_failed
+    logging.info("Saving failed records output")
     output_failed(df_flagged)
 
     # 5. Output_metrcis
+    logging.info("Finalizing metrcis aggregation")
     aggregate_metrics()
-
- 
+        
 
 if __name__ == "__main__":
-    claim_resubmission_ingestion()
+    try:
+        logging.info("Pipeline run started")
+        claim_resubmission_ingestion()
+        logging.info("Completed pipleine run")
+    except Exception as e:
+        logging.error(f"Something went wrong! {e}")
