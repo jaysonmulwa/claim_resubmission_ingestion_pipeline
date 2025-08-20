@@ -1,7 +1,28 @@
-# To Run
+# To Run the application:
 Run the following python code, this should ingest your files and produce the required output.
 ```bash
 python main.py
+```
+
+The FastApi app to upload files and query uploaded file directories can be started with:
+```bash
+python api.py
+```
+
+# API Spec:
+Upload a file:
+```bash
+POST /upload
+```
+
+Get List of files uploaded
+```bash
+GET /uploads
+```
+
+Get List of output files
+```bash
+GET /outputs
 ```
 
 # Inputs
@@ -27,6 +48,6 @@ The required ouputs are as below and are saved in their respective files:
 
 ## Bonus Stretch Goals (Optional but impressive):
 - [x] Modularize the pipeline using functions or classes.
-- [ ] Add a FastAPI endpoint to upload new datasets and return resubmission candidates.
+- [x] Add a FastAPI endpoint to upload new datasets and return resubmission candidates.
 - [x] Simulate a Dagster or Prefect pipeline for orchestration.
-- [ ] Mock an LLM "classifier" function for ambiguous denia
+- [ ] Mock an LLM "classifier" function for ambiguous denial

@@ -3,10 +3,11 @@ import json
 import logging
 from prefect import flow, task
 
-CSV_INPUT_FILE = "emr_alpha.csv"
-JSON_INPUT_FILE= "emr_beta.json"
-RESUBMISSION_CANDIDATES_JSON_FILE = "resubmission_candidates.json"
-FAILED_RECORDS_OUTPUT_FILE = "failed_records.json"
+CSV_INPUT_FILE = "./uploads/emr_alpha.csv"
+JSON_INPUT_FILE= "./uploads/emr_beta.json"
+RESUBMISSION_CANDIDATES_JSON_FILE = "./outputs/resubmission_candidates.json"
+FAILED_RECORDS_OUTPUT_FILE = "./outputs/failed_records.json"
+CLAIM_METRICS_OUTPUT_FILE = "./outputs/claims_metrics.json"
 METRICS = {
     "total_claims": 0,
     "total_claims_alpha_csv": 0,
@@ -171,7 +172,7 @@ def output_failed(df):
 
 @task(log_prints=True)
 def aggregate_metrics():
-    with open('claims_metrics.json', 'w') as f:
+    with open(CLAIM_METRICS_OUTPUT_FILE, 'w') as f:
         json.dump(METRICS, f)
 
     logging.info("Metrics saved to 'claims_metrics.json'")
