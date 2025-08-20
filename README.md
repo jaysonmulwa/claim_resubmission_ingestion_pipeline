@@ -38,6 +38,15 @@ The required ouputs are as below and are saved in their respective files:
 3. Claims metrics -> claims_metrics.json
 
 
+# Workflow Orchestration
+We are using Prefect for Workflow orchestration. You can start the prefect server with:
+`prefect server start`
+
+Set the path to your server on the commandline:
+`prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api`
+
+After running our pipeline with `python main.py`. The pipeline run output will be available on your browser with `http://127.0.0.1:4200`
+
 
 # Checklists
 ## Final Deliverables
